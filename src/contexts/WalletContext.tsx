@@ -175,12 +175,8 @@ export function WalletProvider({ children }: { children: React.ReactNode }) {
       await set(transactionRef, transaction);
       
       // Update balances
-      const updates = {
-        [`wallet/${currentUser.uid}/balance`]: balance - amount,
-        [`wallet/${currentUser.uid}/cardBalance`]: cardBalance + amount
-      };
-      
-      await set(ref(database), updates);
+      await set(ref(database, `wallet/${currentUser.uid}/balance`), balance - amount);
+      await set(ref(database, `wallet/${currentUser.uid}/cardBalance`), cardBalance + amount);
       
       toast.success(`Successfully transferred ${amount} Tk to card`);
     } catch (error) {
@@ -210,12 +206,8 @@ export function WalletProvider({ children }: { children: React.ReactNode }) {
       await set(transactionRef, transaction);
       
       // Update balances
-      const updates = {
-        [`wallet/${currentUser.uid}/balance`]: balance + amount,
-        [`wallet/${currentUser.uid}/cardBalance`]: cardBalance - amount
-      };
-      
-      await set(ref(database), updates);
+      await set(ref(database, `wallet/${currentUser.uid}/balance`), balance + amount);
+      await set(ref(database, `wallet/${currentUser.uid}/cardBalance`), cardBalance - amount);
       
       toast.success(`Successfully transferred ${amount} Tk to account`);
     } catch (error) {
@@ -250,12 +242,7 @@ export function WalletProvider({ children }: { children: React.ReactNode }) {
           await set(ref(database, `transactions/${currentUser.uid}/${transactionRef.key}/status`), 'completed');
           
           // Update balance
-          const currentBalanceRef = ref(database, `wallet/${currentUser.uid}/balance`);
-          const snapshot = await get(currentBalanceRef);
-          const currentBalance = snapshot.exists() ? snapshot.val() : 0;
-          const newBalance = currentBalance + amount;
-          
-          await set(currentBalanceRef, newBalance);
+          await set(ref(database, `wallet/${currentUser.uid}/balance`), balance + amount);
           
           toast.success(`Deposit of ${amount} Tk approved!`);
         }
@@ -295,12 +282,7 @@ export function WalletProvider({ children }: { children: React.ReactNode }) {
           await set(ref(database, `transactions/${currentUser.uid}/${transactionRef.key}/status`), 'completed');
           
           // Update balance
-          const currentBalanceRef = ref(database, `wallet/${currentUser.uid}/balance`);
-          const snapshot = await get(currentBalanceRef);
-          const currentBalance = snapshot.exists() ? snapshot.val() : 0;
-          const newBalance = currentBalance - amount;
-          
-          await set(currentBalanceRef, newBalance);
+          await set(ref(database, `wallet/${currentUser.uid}/balance`), balance - amount);
           
           toast.success(`Withdrawal of ${amount} Tk approved!`);
         }
